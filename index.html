@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>Bticino All Lights</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" 
+
+integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
+	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.2/css/all.css" integrity="sha384-/rXc/GQVaYpyDdyxK+ecHPVYJSN9bmVFBvjA/9eOB+pb3F2w2N6fc5qB9Ew5yIns" crossorigin="anonymous">
+  </head>
+  <body>
+  
+  <div id="lights_table">
+  </div>
+  
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js" integrity="sha384-cs/chFZiN24E4KMATLdqdvsezGxaGsi4hLGOzlXwp5UZB1LY//20VyM2taTB4QvJ" crossorigin="anonymous"></script>
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js" integrity="sha384-uefMccjFJAIv6A+rW+L4AHf99KvxDjWSu1z9VI8SKNVmz4sk7buKt/6v9KI65qnm" crossorigin="anonymous"></script>
+  <script>
+  
+	$(document).ready(function() {
+		loadTable();
+	});
+  
+	function loadTable()
+	{
+		var message;
+		message = "LIST";
+		$.post("service.php", message, function(data, status) {
+			if (status=="success")
+			{
+				parseTable(data);
+			}
+		}, "json");
+	}
+	
+	function parseTable(data)
+	{
+		var content = "";
+		content += "<table>";
+		content += "<tr><th>Light</th><th>Status</th></tr>";
+		for (i=0; i<data.length; i++)
+		{
+			if (data[i].status==0)
+			{
+				content += "<tr class=\"light_off\"><td>";
+			} else {
+				content += "<tr class=\"light_on\"><td>";
+			}
+			content += data[i].name;
+			content += "</td><td>";
+			content += buttons(data[i]);
+			content += "</td></tr>";
+		}
+		content += "</table>";
+		
+		$("#lights_table").html(content);
+	}
+	
+	function buttons(element) 
+	{
+		var retVal = "";
+		if (element.status == 0)
+		{
+			retVal += "<button class=\"fas fa-toggle-off\" onClick=\"turnOn(" + element.if + "," + element.a + "," + element.pl + ")\"></button>";
+		} else if (element.status == 1) {
+			retVal += "<button class=\"fas fa-toggle-on\" onClick=\"turnOff(" + element.if + "," + element.a + "," + element.pl + ")\"></button>";
+		} else {
+			retVal += "<button class=\"fas fa-question\"></button>";
+		}
+
+		if (element.status != -1 && typeof element.intensity !== "undefined")
+		{
+			retVal += "&nbsp;<button class=\"fas fa-minus\" onClick=\"dimDown(" + element.if + "," + element.a + "," + element.pl + ")\"></button>&nbsp;<button class=\"fas fa-plus\" onClick=\"dimUp(" + element.if + "," + element.a + "," + element.pl + ")\"></button>&nbsp;" + element.intensity * 10 + "%"; 
+		}
+		
+		return retVal;
+	}
+	
+	
+	function sleep(ms) {
+		return new Promise(resolve => setTimeout(resolve, ms));
+	}
+
+	async function turnOn(iface, a, pl)
+	{
+		var data = new Object();
+		data.action="ON";
+		data.iface=iface;
+		data.a=a;
+		data.pl=pl;
+		$.post("service.php", JSON.stringify(data));
+		await sleep(2000);
+		loadTable();
+	}
+  
+	async function turnOff(iface, a, pl)
+	{
+		var data = new Object();
+		data.action="OFF";
+		data.iface=iface;
+		data.a=a;
+		data.pl=pl;
+		$.post("service.php", JSON.stringify(data));
+		await sleep(2000);
+		loadTable();
+	}
+
+	async function dimUp(iface, a, pl)
+	{
+		var data = new Object();
+		data.action="UP";
+		data.iface=iface;
+		data.a=a;
+		data.pl=pl;
+		$.post("service.php", JSON.stringify(data));
+		await sleep(2000);
+		loadTable();
+	}
+	
+	async function dimDown(iface, a, pl)
+	{
+		var data = new Object();
+		data.action="DOWN";
+		data.iface=iface;
+		data.a=a;
+		data.pl=pl;
+		$.post("service.php", JSON.stringify(data));
+		await sleep(2000);
+		loadTable();
+	}
+  </script>
+  </body>
+</html>
