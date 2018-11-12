@@ -1,4 +1,4 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <title>Bticino All Lights</title>
@@ -11,7 +11,7 @@ integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJ
   </head>
   <body>
   
-  <div id="lights_table">
+  <div id="lights_table" class="container-fluid table-responsive">
   </div>
   
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
@@ -38,8 +38,11 @@ integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJ
 	function parseTable(data)
 	{
 		var content = "";
-		content += "<table>";
+		content += "<table class=\"table table-striped table-bordered table-sm\">";
+		content += "<thead class=\"thead-dark\">";
 		content += "<tr><th>Light</th><th>Status</th></tr>";
+		content += "</thead>";
+		content += "<tbody>";
 		for (i=0; i<data.length; i++)
 		{
 			if (data[i].status==0)
@@ -53,6 +56,7 @@ integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJ
 			content += buttons(data[i]);
 			content += "</td></tr>";
 		}
+		content += "</tbody>";
 		content += "</table>";
 		
 		$("#lights_table").html(content);
@@ -63,16 +67,16 @@ integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJ
 		var retVal = "";
 		if (element.status == 0)
 		{
-			retVal += "<button class=\"fas fa-toggle-off\" onClick=\"turnOn(" + element.if + "," + element.a + "," + element.pl + ")\"></button>";
+			retVal += "<button class=\"btn btn-outline-dark btn-sm fas fa-toggle-off\" onClick=\"turnOn(" + element.if + "," + element.a + "," + element.pl + ")\"></button>";
 		} else if (element.status == 1) {
-			retVal += "<button class=\"fas fa-toggle-on\" onClick=\"turnOff(" + element.if + "," + element.a + "," + element.pl + ")\"></button>";
+			retVal += "<button class=\"btn btn-outline-dark btn-sm fas fa-toggle-on\" onClick=\"turnOff(" + element.if + "," + element.a + "," + element.pl + ")\"></button>";
 		} else {
-			retVal += "<button class=\"fas fa-question\"></button>";
+			retVal += "<button class=\"btn btn-outline-dark btn-sm fas fa-question\"></button>";
 		}
 
 		if (element.status != -1 && typeof element.intensity !== "undefined")
 		{
-			retVal += "&nbsp;<button class=\"fas fa-minus\" onClick=\"dimDown(" + element.if + "," + element.a + "," + element.pl + ")\"></button>&nbsp;<button class=\"fas fa-plus\" onClick=\"dimUp(" + element.if + "," + element.a + "," + element.pl + ")\"></button>&nbsp;" + element.intensity * 10 + "%"; 
+			retVal += "&nbsp;<button class=\"btn btn-outline-dark btn-sm fas fa-minus\" onClick=\"dimDown(" + element.if + "," + element.a + "," + element.pl + ")\"></button>&nbsp;<button class=\"btn btn-outline-dark btn-sm fas fa-plus\" onClick=\"dimUp(" + element.if + "," + element.a + "," + element.pl + ")\"></button>&nbsp;" + element.intensity * 10 + "%"; 
 		}
 		
 		return retVal;
